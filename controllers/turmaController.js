@@ -100,11 +100,13 @@ const editar = asyncHandler(async (req, res) => {
     [id]
   );
 
+  const professoresSelecionados = vinculadosResult.rows.map((row) => parseInt(row.usuario_id, 10));
+
   res.render('admin/turmas/form', {
     titulo: 'Editar Turma',
     turma: turmaResult.rows[0],
     professores: professoresResult.rows,
-    professoresSelecionados: vinculadosResult.rows.map((row) => row.usuario_id.toString()),
+    professoresSelecionados,
   });
 });
 

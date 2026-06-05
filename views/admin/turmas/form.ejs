@@ -104,7 +104,7 @@
                           id="prof_<%= professor.id %>"
                           name="professores_ids"
                           value="<%= professor.id %>"
-                          <%= (typeof professoresSelecionados !== 'undefined' && professoresSelecionados && professoresSelecionados.includes(professor.id.toString())) ? 'checked' : '' %>
+                          <%= (professoresSelecionados && professoresSelecionados.includes(professor.id)) ? 'checked' : '' %>
                         >
                         <label class="form-check-label" for="prof_<%= professor.id %>">
                           <%= professor.nome %>
