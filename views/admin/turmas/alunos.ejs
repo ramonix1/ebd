@@ -1,0 +1,86 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-people"></i> Alunos - <%= turma.nome %>
+      </h1>
+      <p class="text-muted">
+        <i class="bi bi-calendar"></i> <%= turma.trimestre %>º Trimestre |
+        <i class="bi bi-clock"></i> <%= turma.horario_inicio %> às <%= turma.horario_fim %>
+      </p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <% if (alunos && alunos.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Nome</th>
+              <th>Data Nascimento</th>
+              <th>Responsável</th>
+              <th>Telefone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% alunos.forEach(aluno => { %>
+              <tr>
+                <td>
+                  <strong><%= aluno.nome %></strong>
+                </td>
+                <td>
+                  <% if (aluno.data_nascimento) { %>
+                    <%= new Date(aluno.data_nascimento).toLocaleDateString('pt-BR') %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.responsavel) { %>
+                    <%= aluno.responsavel %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.telefone_responsavel) { %>
+                    <%= aluno.telefone_responsavel %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer bg-light">
+        <small class="text-muted">
+          <i class="bi bi-info-circle"></i> Total de <%= alunos.length %> aluno(s) matriculado(s)
+        </small>
+      </div>
+    <% } else { %>
+      <div class="card-body">
+        <p class="text-muted text-center py-5">
+          <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+          <br>
+          Nenhum aluno matriculado nesta turma
+        </p>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin/turmas/<%= turma.id %>/matriculas" class="btn btn-primary">
+      <i class="bi bi-person-plus"></i> Gerenciar Matrículas
+    </a>
+    <a href="/admin/turmas" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

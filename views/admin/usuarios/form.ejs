@@ -1,0 +1,116 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-person-gear"></i> <%= usuario ? 'Editar Usuário' : 'Novo Usuário' %>
+      </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <% if (typeof erro !== 'undefined' && erro) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-circle"></i> <%= erro %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+
+          <form method="POST" action="<%= usuario ? '/admin/usuarios/' + usuario.id : '/admin/usuarios' %>" autocomplete="off">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <div class="mb-3">
+              <label for="nome" class="form-label">
+                Nome
+                <span class="required-indicator">*</span>
+              </label>
+              <input type="text" class="form-control" id="nome" name="nome" value="<%= usuario ? usuario.nome : '' %>" required>
+            </div>
+
+            <% if (!usuario) { %>
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  Email
+                  <span class="required-indicator">*</span>
+                </label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= usuario ? usuario.email : '' %>" autocomplete="off" required>
+              </div>
+            <% } else { %>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= usuario.email %>" disabled>
+                <small class="text-muted">Email não pode ser alterado</small>
+              </div>
+            <% } %>
+
+            <div class="mb-3">
+              <label for="tipo" class="form-label">
+                Tipo de Usuário
+                <span class="required-indicator">*</span>
+              </label>
+              <select class="form-select" id="tipo" name="tipo" required>
+                <option value="">Selecione...</option>
+                <option value="professor" <%= usuario && usuario.tipo === 'professor' ? 'selected' : '' %>>Professor</option>
+                <option value="admin" <%= usuario && usuario.tipo === 'admin' ? 'selected' : '' %>>Administrador</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="senha" class="form-label">
+                <%= usuario ? 'Nova Senha (deixe em branco para não alterar)' : 'Senha' %>
+                <% if (!usuario) { %>
+                  <span class="required-indicator">*</span>
+                <% } %>
+              </label>
+              <input type="password" class="form-control" id="senha" name="senha" autocomplete="<%= usuario ? 'off' : 'new-password' %>" <%= usuario ? '' : 'required' %>>
+            </div>
+
+            <% if (!usuario) { %>
+              <div class="mb-3">
+                <label for="senha_confirmacao" class="form-label">
+                  Confirmar Senha
+                  <span class="required-indicator">*</span>
+                </label>
+                <input type="password" class="form-control" id="senha_confirmacao" name="senha_confirmacao" required>
+              </div>
+            <% } %>
+
+            <% if (usuario) { %>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="ativo"
+                    name="ativo"
+                    <%= usuario.ativo ? 'checked' : '' %>
+                  >
+                  <label class="form-check-label" for="ativo">
+                    <i class="bi bi-person-check"></i> Usuário Ativo
+                  </label>
+                </div>
+                <small class="text-muted d-block mt-2">
+                  Desmarque para desativar este usuário. Usuários inativos não conseguem fazer login.
+                </small>
+              </div>
+            <% } %>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Salvar
+              </button>
+              <a href="/admin/usuarios" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

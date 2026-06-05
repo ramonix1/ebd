@@ -1,0 +1,165 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-person-check"></i> <%= professor ? 'Editar Professor' : 'Novo Professor' %>
+      </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <% if (typeof erro !== 'undefined' && erro) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-circle"></i> <%= erro %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+
+          <form method="POST" action="<%= professor ? '/admin/professores/' + professor.id : '/admin/professores' %>" autocomplete="off">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <div class="mb-3">
+              <label for="nome" class="form-label">
+                <i class="bi bi-person"></i> Nome
+                <span class="required-indicator">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="nome"
+                name="nome"
+                value="<%= professor ? professor.nome : '' %>"
+                placeholder="Nome completo do professor"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label for="telefone" class="form-label">
+                <i class="bi bi-telephone"></i> Telefone
+              </label>
+              <input
+                type="tel"
+                class="form-control"
+                id="telefone"
+                name="telefone"
+                placeholder="(11) 99999-9999"
+                value="<%= professor ? (professor.telefone || '') : '' %>"
+              >
+            </div>
+
+            <% if (!professor) { %>
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  <i class="bi bi-envelope"></i> Email
+                  <span class="required-indicator">*</span>
+                </label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  placeholder="professor@example.com"
+                  autocomplete="off"
+                  required
+                >
+              </div>
+            <% } else { %>
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  <i class="bi bi-envelope"></i> Email
+                </label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  value="<%= professor.email %>"
+                  disabled
+                >
+                <small class="text-muted">Email não pode ser alterado</small>
+              </div>
+            <% } %>
+
+            <div class="mb-3">
+              <label for="senha" class="form-label">
+                <i class="bi bi-lock"></i>
+                <%= professor ? 'Nova Senha (deixe em branco para não alterar)' : 'Senha' %>
+                <% if (!professor) { %>
+                  <span class="required-indicator">*</span>
+                <% } %>
+              </label>
+              <input
+                type="password"
+                class="form-control"
+                id="senha"
+                name="senha"
+                placeholder="<%= professor ? 'Deixe em branco para manter a senha atual' : 'Digite uma senha' %>"
+                autocomplete="<%= professor ? 'off' : 'new-password' %>"
+                <%= professor ? '' : 'required' %>
+              >
+            </div>
+
+            <% if (professor) { %>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="ativo"
+                    name="ativo"
+                    <%= professor.ativo ? 'checked' : '' %>
+                  >
+                  <label class="form-check-label" for="ativo">
+                    <i class="bi bi-person-check"></i> Professor Ativo
+                  </label>
+                </div>
+                <small class="text-muted d-block mt-2">
+                  Desmarque para desativar este professor. Professores inativos não conseguem fazer login.
+                </small>
+              </div>
+            <% } %>
+
+            <div class="alert alert-info" role="alert">
+              <i class="bi bi-info-circle"></i>
+              <strong>Importante:</strong> Os professores podem ser vinculados a uma ou mais turmas.
+              Isso é feito ao criar/editar as turmas.
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Salvar
+              </button>
+              <a href="/admin/professores" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm bg-light">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-lightbulb"></i> Dica
+          </h5>
+          <p class="card-text small">
+            Após criar um professor, você pode vinculá-lo a turmas específicas
+            no formulário de criação/edição de turmas.
+          </p>
+          <p class="card-text small">
+            Um professor pode dar aula em múltiplas turmas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

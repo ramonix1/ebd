@@ -1,0 +1,181 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-check2-square"></i> Registrar Frequência - <%= turma.nome %>
+      </h1>
+    </div>
+  </div>
+
+  <% if (!isDomingo) { %>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle"></i>
+      <strong>Atenção!</strong> Hoje não é domingo. A aula normalmente é aos <%= turma.dia_semana %>s.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (chamadaJaRegistrada) { %>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="bi bi-info-circle"></i>
+      <strong>Chamada já registrada!</strong> Você está editando a chamada de hoje.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-pencil"></i> Verificar Presença
+          </h5>
+        </div>
+        <div class="card-body">
+          <form action="/professor/turma/<%= turma.id %>/frequencia/salvar" method="POST" id="formFrequencia" class="needs-validation" novalidate>
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+            <!-- Data da Aula (read-only) -->
+            <div class="mb-3">
+              <label for="data_aula" class="form-label">
+                <i class="bi bi-calendar-event"></i> Data da Aula
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                id="data_aula"
+                name="data_aula"
+                value="<%= dataAula %>"
+                readonly
+              >
+              <small class="text-muted d-block mt-2">
+                A data é fixa para hoje. Você só pode registrar frequência no dia da aula.
+              </small>
+            </div>
+
+            <!-- Lista de Alunos -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-people"></i> Alunos (Marque os presentes)
+              </label>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="bg-light">
+                    <tr>
+                      <th style="width: 50px; text-align: center;">
+                        <input
+                          type="checkbox"
+                          id="selectAll"
+                          class="form-check-input"
+                          aria-label="Selecionar todos"
+                        >
+                      </th>
+                      <th>Aluno</th>
+                      <th style="width: 100px; text-align: center;">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (alunos && alunos.length > 0) { %>
+                      <% alunos.forEach(aluno => { %>
+                        <tr>
+                          <td style="text-align: center;">
+                            <input
+                              type="checkbox"
+                              name="presencas"
+                              value="<%= aluno.id %>"
+                              class="form-check-input aluno-checkbox"
+                              <% if (frequencias[aluno.id]) { %>checked<% } %>
+                            >
+                          </td>
+                          <td>
+                            <strong><%= aluno.nome %></strong>
+                          </td>
+                          <td style="text-align: center;">
+                            <% if (frequencias[aluno.id]) { %>
+                              <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Presente
+                              </span>
+                            <% } else { %>
+                              <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Ausente
+                              </span>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                          <i class="bi bi-inbox"></i> Nenhum aluno matriculado nesta turma
+                        </td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check2"></i> Salvar Frequência
+              </button>
+              <a href="/professor/turma/<%= turma.id %>/frequencia" class="btn btn-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Voltar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm bg-light">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-info-circle"></i> Instruções
+          </h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-2"><strong>Como funciona:</strong></p>
+          <ul class="small">
+            <li>Marque os checkboxes dos alunos <strong>presentes</strong></li>
+            <li>Os não marcados serão registrados como <strong>ausentes</strong></li>
+            <li>Você pode <strong>editar</strong> a mesma data múltiplas vezes</li>
+            <li>A data é sempre <strong>hoje</strong> por segurança</li>
+          </ul>
+          <hr>
+          <p class="small text-muted mb-0">
+            <i class="bi bi-clock"></i>
+            Data: <strong><%= new Date(dataAula).toLocaleDateString('pt-BR') %></strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Selecionar/desselecionar todos
+document.getElementById('selectAll').addEventListener('change', function() {
+  const checkboxes = document.querySelectorAll('.aluno-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = this.checked;
+  });
+});
+
+// Validação do formulário
+const form = document.getElementById('formFrequencia');
+form.addEventListener('submit', function(e) {
+  if (form.checkValidity() === false) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  form.classList.add('was-validated');
+});
+</script>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,104 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-person-plus"></i> Matrículas - <%= turma.nome %>
+      </h1>
+      <p class="text-muted">Vincular alunos a esta turma</p>
+    </div>
+  </div>
+
+  <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle"></i> Operação realizada com sucesso!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <div class="row">
+    <!-- Alunos Matriculados -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-check-circle"></i> Alunos Matriculados (<%= matriculados.length %>)
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if (matriculados && matriculados.length > 0) { %>
+            <div class="list-group">
+              <% matriculados.forEach(aluno => { %>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>
+                    <i class="bi bi-person"></i> <%= aluno.nome %>
+                  </span>
+                  <form method="POST" action="/admin/turmas/<%= turma.id %>/matriculas/remover" style="display: inline;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <input type="hidden" name="alunoId" value="<%= aluno.id %>">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover aluno?');">
+                      <i class="bi bi-x-circle"></i> Remover
+                    </button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <p class="text-muted text-center py-4">
+              <i class="bi bi-inbox"></i> Nenhum aluno matriculado ainda
+            </p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alunos Disponíveis -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-plus-circle"></i> Alunos Disponíveis (<%= disponiveis.length %>)
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if (disponiveis && disponiveis.length > 0) { %>
+            <div class="list-group">
+              <% disponiveis.forEach(aluno => { %>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>
+                    <i class="bi bi-person"></i> <%= aluno.nome %>
+                  </span>
+                  <form method="POST" action="/admin/turmas/<%= turma.id %>/matriculas/adicionar" style="display: inline;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <input type="hidden" name="alunoId" value="<%= aluno.id %>">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                      <i class="bi bi-plus-circle"></i> Adicionar
+                    </button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <p class="text-muted text-center py-4">
+              <i class="bi bi-inbox"></i> Todos os alunos já estão matriculados ou não existem alunos
+            </p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <a href="/admin/turmas/<%= turma.id %>/editar" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para Turma
+      </a>
+      <a href="/admin/turmas" class="btn btn-secondary">
+        <i class="bi bi-list"></i> Listar Turmas
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

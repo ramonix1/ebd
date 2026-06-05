@@ -1,0 +1,110 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h1>
+        <i class="bi bi-people"></i> Alunos
+      </h1>
+      <a href="/admin/alunos/novo" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Novo Aluno
+      </a>
+    </div>
+  </div>
+
+  <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle"></i> Operação realizada com sucesso!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm">
+    <% if (alunos && alunos.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Nome</th>
+              <th>Data Nascimento</th>
+              <th>Responsável</th>
+              <th>Telefone</th>
+              <th>Turmas</th>
+              <th>Status</th>
+              <th style="width: 200px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% alunos.forEach(aluno => { %>
+              <tr>
+                <td>
+                  <strong><%= aluno.nome %></strong>
+                </td>
+                <td>
+                  <% if (aluno.data_nascimento) { %>
+                    <%= new Date(aluno.data_nascimento).toLocaleDateString('pt-BR') %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.responsavel) { %>
+                    <%= aluno.responsavel %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.telefone_responsavel) { %>
+                    <%= aluno.telefone_responsavel %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.turmas) { %>
+                    <%= aluno.turmas %>
+                  <% } else { %>
+                    <span class="text-muted">Sem turma</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (aluno.ativo) { %>
+                    <span class="badge bg-success">
+                      <i class="bi bi-check-circle"></i> Ativo
+                    </span>
+                  <% } else { %>
+                    <span class="badge bg-secondary">
+                      <i class="bi bi-x-circle"></i> Inativo
+                    </span>
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/admin/alunos/<%= aluno.id %>/editar" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                  <form method="POST" action="/admin/alunos/<%= aluno.id %>/deletar" style="display: inline;" onsubmit="return confirm('Tem certeza?');">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="card-body">
+        <p class="text-muted text-center py-5">
+          <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+          <br>
+          Nenhum aluno cadastrado ainda.
+        </p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

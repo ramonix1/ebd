@@ -1,0 +1,245 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="d-flex align-items-center gap-3 mb-0">
+          <img src="/images/logo.jpeg" alt="Logo" style="height: 40px;">
+          Dashboard Admin
+        </h1>
+      </div>
+      <img src="/images/logo_claro.jpeg" alt="Logo" style="height: 80px; opacity: 0.8;">
+    </div>
+  </div>
+
+  <!-- CARDS PRINCIPAIS -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Turmas Ativas</p>
+              <h3 class="mb-0"><%= stats.turmas %></h3>
+            </div>
+            <i class="bi bi-buildings text-primary" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Total de Alunos</p>
+              <h3 class="mb-0"><%= stats.alunos %></h3>
+            </div>
+            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Professores</p>
+              <h3 class="mb-0"><%= stats.professores %></h3>
+            </div>
+            <i class="bi bi-person-check text-info" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Frequência Média</p>
+              <h3 class="mb-0"><%= stats.frequencia %>%</h3>
+            </div>
+            <i class="bi bi-graph-up text-warning" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARDS DO ÚLTIMO DOMINGO -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm bg-success-light">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Alunos Presentes (Último Domingo)</p>
+              <h3 class="mb-0 text-success"><%= stats.alunosPresentes %></h3>
+            </div>
+            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Data da Última Aula</p>
+              <h5 class="mb-0">
+                <% if (stats.ultimaAula) { %>
+                  <%= new Date(stats.ultimaAula).toLocaleDateString('pt-BR') %>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </h5>
+            </div>
+            <i class="bi bi-calendar-event text-info" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if (stats.turmasSemChamada && stats.turmasSemChamada.length > 0) { %>
+      <div class="col-md-6 col-lg-6">
+        <div class="card border-0 shadow-sm border-warning bg-warning-light">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small mb-1">Turmas sem Chamada no Último Domingo</p>
+                <h3 class="mb-0 text-warning"><%= stats.turmasSemChamada.length %></h3>
+                <small class="text-muted d-block mt-2">
+                  <% stats.turmasSemChamada.forEach(turma => { %>
+                    <span class="badge bg-warning"><%= turma.nome %></span>
+                  <% }); %>
+                </small>
+              </div>
+              <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- RANKING DE TURMAS -->
+  <% if (stats.rankingTurmas && stats.rankingTurmas.length > 0) { %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-trophy"></i> Ranking de Turmas por Frequência
+            </h5>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th>#</th>
+                  <th>Turma</th>
+                  <th class="text-center">Total Registros</th>
+                  <th class="text-center">Presentes</th>
+                  <th class="text-center">% Frequência</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% stats.rankingTurmas.forEach((turma, index) => { %>
+                  <tr>
+                    <td><strong><%= index + 1 %></strong></td>
+                    <td><strong><%= turma.nome %></strong></td>
+                    <td class="text-center"><%= turma.total_registros %></td>
+                    <td class="text-center">
+                      <span class="badge bg-success"><%= turma.presentes %></span>
+                    </td>
+                    <td class="text-center">
+                      <% if (turma.percentual !== null) { %>
+                        <% if (turma.percentual >= 75) { %>
+                          <span class="badge bg-success"><%= turma.percentual %>%</span>
+                        <% } else if (turma.percentual >= 50) { %>
+                          <span class="badge bg-warning"><%= turma.percentual %>%</span>
+                        <% } else { %>
+                          <span class="badge bg-danger"><%= turma.percentual %>%</span>
+                        <% } %>
+                      <% } else { %>
+                        <span class="text-muted">—</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- ATALHOS RÁPIDOS -->
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="mb-0">
+            <i class="bi bi-activity"></i> Atalhos Rápidos
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <a href="/admin/turmas" class="btn btn-outline-primary btn-lg w-100 mb-3">
+                <i class="bi bi-list"></i> Gerenciar Turmas
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="/admin/turmas/operacional" class="btn btn-outline-success btn-lg w-100 mb-3">
+                <i class="bi bi-check2-square"></i> Registrar Frequência
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <a href="/admin/turmas/novo" class="btn btn-outline-info btn-lg w-100 mb-3">
+                <i class="bi bi-plus-circle"></i> Nova Turma
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="/admin/alunos/novo" class="btn btn-outline-warning btn-lg w-100 mb-3">
+                <i class="bi bi-plus-circle"></i> Novo Aluno
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <a href="/admin/usuarios/novo" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+                <i class="bi bi-plus-circle"></i> Novo Usuário
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="/admin/professores/supervisao" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+                <i class="bi bi-eye"></i> Supervisão
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <a href="/admin/relatorios" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+                <i class="bi bi-file-text"></i> Ver Relatórios
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

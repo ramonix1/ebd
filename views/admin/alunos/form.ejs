@@ -1,0 +1,68 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-people"></i> <%= aluno ? 'Editar Aluno' : 'Novo Aluno' %>
+      </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <% if (typeof erro !== 'undefined' && erro) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-circle"></i> <%= erro %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+
+          <form method="POST" action="<%= aluno ? '/admin/alunos/' + aluno.id : '/admin/alunos' %>">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <div class="mb-3">
+              <label for="nome" class="form-label">
+                Nome do Aluno
+                <span class="required-indicator">*</span>
+              </label>
+              <input type="text" class="form-control" id="nome" name="nome" value="<%= aluno ? aluno.nome : '' %>" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="data_nascimento" class="form-label">Data de Nascimento</label>
+              <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" value="<%= aluno && aluno.data_nascimento ? aluno.data_nascimento.split('T')[0] : '' %>">
+            </div>
+
+            <div class="mb-3">
+              <label for="responsavel" class="form-label">Responsável</label>
+              <input type="text" class="form-control" id="responsavel" name="responsavel" value="<%= aluno ? (aluno.responsavel || '') : '' %>">
+            </div>
+
+            <div class="mb-3">
+              <label for="email_responsavel" class="form-label">Email do Responsável</label>
+              <input type="email" class="form-control" id="email_responsavel" name="email_responsavel" value="<%= aluno ? (aluno.email_responsavel || '') : '' %>">
+            </div>
+
+            <div class="mb-3">
+              <label for="telefone_responsavel" class="form-label">Telefone do Responsável</label>
+              <input type="tel" class="form-control" id="telefone_responsavel" name="telefone_responsavel" value="<%= aluno ? (aluno.telefone_responsavel || '') : '' %>">
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Salvar
+              </button>
+              <a href="/admin/alunos" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

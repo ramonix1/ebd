@@ -1,0 +1,168 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h1>
+          <i class="bi bi-eye"></i> Supervisão - <%= professor.nome %>
+        </h1>
+        <small class="text-muted"><%= professor.email %></small>
+      </div>
+      <a href="/admin/professores/supervisao" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  <!-- CARDS PRINCIPAIS -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Turmas Atribuídas</p>
+              <h3 class="mb-0"><%= stats.turmas %></h3>
+            </div>
+            <i class="bi bi-buildings text-primary" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Total de Alunos</p>
+              <h3 class="mb-0"><%= stats.alunos %></h3>
+            </div>
+            <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Frequência Média</p>
+              <h3 class="mb-0"><%= stats.frequencia %>%</h3>
+            </div>
+            <i class="bi bi-graph-up text-warning" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD DA ÚLTIMA CHAMADA -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Última Chamada Registrada</p>
+              <% if (stats.ultimaChamada) { %>
+                <h5 class="mb-0 text-success">
+                  <%= new Date(stats.ultimaChamada).toLocaleDateString('pt-BR') %>
+                </h5>
+              <% } else { %>
+                <h5 class="mb-0 text-muted">Nenhuma registrada</h5>
+              <% } %>
+            </div>
+            <i class="bi bi-calendar-check text-info" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTA DE DOMINGO -->
+    <% if (stats.isDomingo && !stats.chamadaHojeRegistrada) { %>
+      <div class="col-md-6 col-lg-8">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-circle"></i>
+          <strong>Atenção!</strong> Hoje é domingo e este professor ainda <strong>não registrou a chamada</strong>.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- TURMAS DO PROFESSOR -->
+  <% if (turmas && turmas.length > 0) { %>
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-list-check"></i> Turmas Atribuídas
+            </h5>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th>Turma</th>
+                  <th class="text-center">Faixa Etária</th>
+                  <th class="text-center">Dia/Hora</th>
+                  <th class="text-center">Alunos</th>
+                  <th class="text-center">Última Aula</th>
+                  <th class="text-center">Trimestre</th>
+                  <th style="width: 100px;">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% turmas.forEach(turma => { %>
+                  <tr>
+                    <td>
+                      <strong><%= turma.nome %></strong>
+                    </td>
+                    <td class="text-center">
+                      <small><%= turma.faixa_etaria ? turma.faixa_etaria : '—' %></small>
+                    </td>
+                    <td class="text-center">
+                      <small>
+                        <i class="bi bi-calendar"></i> <%= turma.dia_semana %><br>
+                        <i class="bi bi-clock"></i> <%= turma.horario_inicio %> - <%= turma.horario_fim %>
+                      </small>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-info"><%= turma.total_alunos %></span>
+                    </td>
+                    <td class="text-center">
+                      <% if (turma.ultima_aula) { %>
+                        <small><%= new Date(turma.ultima_aula).toLocaleDateString('pt-BR') %></small>
+                      <% } else { %>
+                        <small class="text-muted">Nunca</small>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-secondary"><%= turma.trimestre %>º trim. <%= turma.ano_letivo %></span>
+                    </td>
+                    <td class="text-center">
+                      <a href="/professor/turma/<%= turma.id %>/frequencia" class="btn btn-sm btn-outline-primary" title="Ver frequência">
+                        <i class="bi bi-graph-up"></i>
+                      </a>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="alert alert-info" role="alert">
+      <i class="bi bi-info-circle"></i> Este professor não está atribuído a nenhuma turma ainda.
+    </div>
+  <% } %>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,139 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-buildings"></i> <%= turma ? 'Editar Turma' : 'Nova Turma' %>
+      </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <% if (typeof erro !== 'undefined' && erro) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-circle"></i> <%= erro %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+
+          <form method="POST" action="<%= turma ? '/admin/turmas/' + turma.id : '/admin/turmas' %>">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <div class="mb-3">
+              <label for="nome" class="form-label">
+                Nome da Turma
+                <span class="required-indicator">*</span>
+              </label>
+              <input type="text" class="form-control" id="nome" name="nome" value="<%= turma ? turma.nome : '' %>" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="faixa_etaria" class="form-label">Faixa Etária</label>
+              <input type="text" class="form-control" id="faixa_etaria" name="faixa_etaria" placeholder="Ex: 7-10 anos" value="<%= turma ? (turma.faixa_etaria || '') : '' %>">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="dia_semana" class="form-label">
+                  Dia da Semana
+                  <span class="required-indicator">*</span>
+                </label>
+                <select class="form-select" id="dia_semana" name="dia_semana" required>
+                  <option value="">Selecione...</option>
+                  <option value="domingo" <%= turma && turma.dia_semana === 'domingo' ? 'selected' : '' %>>Domingo</option>
+                </select>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="trimestre" class="form-label">
+                  Trimestre
+                  <span class="required-indicator">*</span>
+                </label>
+                <select class="form-select" id="trimestre" name="trimestre" required>
+                  <option value="">Selecione...</option>
+                  <option value="1" <%= turma && turma.trimestre === '1' ? 'selected' : '' %>>1º Trimestre</option>
+                  <option value="2" <%= turma && turma.trimestre === '2' ? 'selected' : '' %>>2º Trimestre</option>
+                  <option value="3" <%= turma && turma.trimestre === '3' ? 'selected' : '' %>>3º Trimestre</option>
+                  <option value="4" <%= turma && turma.trimestre === '4' ? 'selected' : '' %>>4º Trimestre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="horario_inicio" class="form-label">
+                  Horário Início
+                  <span class="required-indicator">*</span>
+                </label>
+                <input type="time" class="form-control" id="horario_inicio" name="horario_inicio" value="<%= turma ? turma.horario_inicio : '' %>" required>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="horario_fim" class="form-label">
+                  Horário Fim
+                  <span class="required-indicator">*</span>
+                </label>
+                <input type="time" class="form-control" id="horario_fim" name="horario_fim" value="<%= turma ? turma.horario_fim : '' %>" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="descricao" class="form-label">Descrição</label>
+              <textarea class="form-control" id="descricao" name="descricao" rows="3"><%= turma ? (turma.descricao || '') : '' %></textarea>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="mb-4">
+              <h5>
+                <i class="bi bi-person-check"></i> Professores
+              </h5>
+              <p class="text-muted small">Selecione os professores que darão aula nesta turma</p>
+
+              <% if (professores && professores.length > 0) { %>
+                <div class="row">
+                  <% professores.forEach(professor => { %>
+                    <div class="col-md-6 mb-3">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="prof_<%= professor.id %>"
+                          name="professores_ids"
+                          value="<%= professor.id %>"
+                          <%= (typeof professoresSelecionados !== 'undefined' && professoresSelecionados && professoresSelecionados.includes(professor.id.toString())) ? 'checked' : '' %>
+                        >
+                        <label class="form-check-label" for="prof_<%= professor.id %>">
+                          <%= professor.nome %>
+                        </label>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info" role="alert">
+                  <i class="bi bi-info-circle"></i> Nenhum professor cadastrado ainda.
+                  <a href="/admin/usuarios/novo" class="alert-link">Criar professor</a>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Salvar
+              </button>
+              <a href="/admin/turmas" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,171 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h1>
+        <i class="bi bi-list-check"></i> Frequência da Turma - <%= turma.nome %>
+      </h1>
+      <a href="/professor/turma/<%= turma.id %>/frequencia/registrar" class="btn btn-success btn-lg">
+        <i class="bi bi-plus-circle"></i> Registrar Aula
+      </a>
+    </div>
+  </div>
+
+  <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle"></i> Frequência salva com sucesso!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- SEÇÃO A: Histórico de Domingos -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar-event"></i> Histórico de Aulas
+          </h5>
+        </div>
+        <% if (historicoDias && historicoDias.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th>Data da Aula</th>
+                  <th class="text-center">Presentes</th>
+                  <th class="text-center">Faltosos</th>
+                  <th class="text-center">Total</th>
+                  <th class="text-center">% do Dia</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% historicoDias.forEach(dia => { %>
+                  <tr>
+                    <td>
+                      <strong><%= new Date(dia.data_aula).toLocaleDateString('pt-BR') %></strong>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> <%= dia.presentes %>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-danger">
+                        <i class="bi bi-x-circle"></i> <%= dia.faltosos %>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <strong><%= dia.total %></strong>
+                    </td>
+                    <td class="text-center">
+                      <% if (dia.percentual >= 75) { %>
+                        <span class="badge bg-success"><%= dia.percentual %>%</span>
+                      <% } else if (dia.percentual >= 50) { %>
+                        <span class="badge bg-warning"><%= dia.percentual %>%</span>
+                      <% } else { %>
+                        <span class="badge bg-danger"><%= dia.percentual %>%</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="card-body">
+            <p class="text-muted text-center py-4">
+              <i class="bi bi-inbox"></i> Nenhuma aula registrada ainda
+            </p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO B: Ranking de Alunos -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-trophy"></i> Ranking de Alunos
+          </h5>
+        </div>
+        <% if (ranking && ranking.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th style="width: 5%;">#</th>
+                  <th>Aluno</th>
+                  <th class="text-center">Aulas</th>
+                  <th class="text-center">Presentes</th>
+                  <th class="text-center">Faltas</th>
+                  <th class="text-center">% Frequência</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% ranking.forEach((aluno, index) => { %>
+                  <tr>
+                    <td>
+                      <strong><%= index + 1 %></strong>
+                    </td>
+                    <td>
+                      <strong><%= aluno.nome %></strong>
+                    </td>
+                    <td class="text-center">
+                      <%= aluno.total_aulas || 0 %>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> <%= aluno.presencas || 0 %>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-danger">
+                        <i class="bi bi-x-circle"></i> <%= aluno.faltas || 0 %>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <% if (aluno.total_aulas > 0) { %>
+                        <strong><%= aluno.percentual %>%</strong>
+                      <% } else { %>
+                        <span class="text-muted">—</span>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <% if (aluno.percentual >= 75) { %>
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> OK</span>
+                      <% } else if (aluno.percentual >= 50) { %>
+                        <span class="badge bg-warning"><i class="bi bi-exclamation-circle"></i> Alerta</span>
+                      <% } else { %>
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Crítico</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="card-body">
+            <p class="text-muted text-center py-4">
+              <i class="bi bi-inbox"></i> Nenhum aluno para exibir
+            </p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="/professor/minhas-turmas" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

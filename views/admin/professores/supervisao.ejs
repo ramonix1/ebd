@@ -1,0 +1,87 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h1>
+        <i class="bi bi-eye"></i> Supervisão de Professores
+      </h1>
+      <a href="/admin/dashboard" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <% if (professores && professores.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Professor</th>
+              <th>Email</th>
+              <th class="text-center">Turmas</th>
+              <th class="text-center">Alunos</th>
+              <th class="text-center">Frequência Média</th>
+              <th class="text-center">Última Chamada</th>
+              <th style="width: 100px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% professores.forEach(prof => { %>
+              <tr>
+                <td>
+                  <strong><%= prof.nome %></strong>
+                </td>
+                <td>
+                  <small class="text-muted"><%= prof.email %></small>
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-info"><%= prof.total_turmas %></span>
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-success"><%= prof.total_alunos %></span>
+                </td>
+                <td class="text-center">
+                  <% if (prof.frequencia_media !== null) { %>
+                    <% if (prof.frequencia_media >= 75) { %>
+                      <span class="badge bg-success"><%= prof.frequencia_media %>%</span>
+                    <% } else if (prof.frequencia_media >= 50) { %>
+                      <span class="badge bg-warning"><%= prof.frequencia_media %>%</span>
+                    <% } else { %>
+                      <span class="badge bg-danger"><%= prof.frequencia_media %>%</span>
+                    <% } %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <% if (prof.ultima_chamada) { %>
+                    <small><%= new Date(prof.ultima_chamada).toLocaleDateString('pt-BR') %></small>
+                  <% } else { %>
+                    <small class="text-muted">Nunca</small>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <a href="/admin/professores/<%= prof.id %>/dashboard-supervisao" class="btn btn-sm btn-outline-primary" title="Ver dashboard">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="card-body">
+        <p class="text-muted text-center py-5">
+          <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+          <br>
+          Nenhum professor cadastrado.
+        </p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>
