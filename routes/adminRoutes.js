@@ -37,6 +37,9 @@ router.post('/turmas', turmaRules, validar, turmaController.criar);
 
 // ==================== MATRÍCULAS ====================
 router.get('/turmas/:turmaId/alunos', matriculaController.listarAlunosDaTurma);
+router.get('/turmas/:turmaId/alunos/editar', matriculaController.editarAlunosDaTurma);
+router.post('/turmas/:turmaId/alunos', matriculaController.atualizarAlunosDaTurma);
+router.post('/turmas/:turmaId/alunos/:alunoId/toggle', matriculaController.toggleAlunoStatus);
 router.get('/turmas/:turmaId/matriculas', matriculaController.listarPorTurma);
 router.post('/turmas/:turmaId/matriculas/adicionar', matriculaController.adicionarAluno);
 router.post('/turmas/:turmaId/matriculas/remover', matriculaController.removerAluno);
@@ -46,6 +49,7 @@ router.post('/turmas/:turmaId/matriculas/remover', matriculaController.removerAl
 router.get('/alunos/novo', alunoController.formularioNovo);
 router.get('/alunos/:id/editar', alunoController.editar);
 router.post('/alunos/:id/deletar', alunoController.deletar);
+router.post('/alunos/:id/toggle', alunoController.toggleStatus);
 router.post('/alunos/:id', alunoRules, validar, alunoController.atualizar);
 router.get('/alunos', alunoController.listar);
 router.post('/alunos', alunoRules, validar, alunoController.criar);

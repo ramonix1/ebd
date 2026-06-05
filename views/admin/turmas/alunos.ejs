@@ -23,6 +23,8 @@
               <th>Data Nascimento</th>
               <th>Responsável</th>
               <th>Telefone</th>
+              <th>Status</th>
+              <th style="width: 100px;">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -52,6 +54,29 @@
                     <span class="text-muted">—</span>
                   <% } %>
                 </td>
+                <td>
+                  <% if (aluno.ativa) { %>
+                    <span class="badge bg-success">
+                      <i class="bi bi-check-circle"></i> Ativo
+                    </span>
+                  <% } else { %>
+                    <span class="badge bg-secondary">
+                      <i class="bi bi-x-circle"></i> Inativo
+                    </span>
+                  <% } %>
+                </td>
+                <td>
+                  <form method="POST" action="/admin/turmas/<%= turma.id %>/alunos/<%= aluno.id %>/toggle" style="display: inline;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <button type="submit" class="btn btn-sm <%= aluno.ativa ? 'btn-outline-danger' : 'btn-outline-success' %>">
+                      <% if (aluno.ativa) { %>
+                        <i class="bi bi-x-circle"></i> Desativar
+                      <% } else { %>
+                        <i class="bi bi-check-circle"></i> Ativar
+                      <% } %>
+                    </button>
+                  </form>
+                </td>
               </tr>
             <% }); %>
           </tbody>
@@ -74,8 +99,11 @@
   </div>
 
   <div class="mt-4">
-    <a href="/admin/turmas/<%= turma.id %>/matriculas" class="btn btn-primary">
-      <i class="bi bi-person-plus"></i> Gerenciar Matrículas
+    <a href="/admin/turmas/<%= turma.id %>/alunos/editar" class="btn btn-primary">
+      <i class="bi bi-pencil"></i> Editar Alunos
+    </a>
+    <a href="/admin/turmas/<%= turma.id %>/matriculas" class="btn btn-outline-primary">
+      <i class="bi bi-person-plus"></i> Gerenciar Matrículas (Legacy)
     </a>
     <a href="/admin/turmas" class="btn btn-secondary">
       <i class="bi bi-arrow-left"></i> Voltar

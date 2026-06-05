@@ -25,7 +25,8 @@ const listar = asyncHandler(async (req, res) => {
   const result = await pool.query(
     `SELECT
       t.*,
-      STRING_AGG(u.nome, ', ' ORDER BY u.nome) as professores_nomes
+      STRING_AGG(u.nome, ', ' ORDER BY u.nome) as professores_nomes,
+      (SELECT COUNT(DISTINCT aluno_id) FROM matriculas WHERE turma_id = t.id AND ativa = true) as total_alunos
      FROM turmas t
      LEFT JOIN turma_professores tp ON t.id = tp.turma_id AND tp.ativo = true
      LEFT JOIN usuarios u ON tp.usuario_id = u.id

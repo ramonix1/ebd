@@ -1,0 +1,72 @@
+<%- include('../../partials/header') %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>
+        <i class="bi bi-people"></i> <%= turma.nome %> - Gerenciar Alunos
+      </h1>
+      <p class="text-muted">
+        <i class="bi bi-calendar"></i> <%= turma.trimestre %>º Trimestre |
+        <i class="bi bi-clock"></i> <%= turma.horario_inicio %> às <%= turma.horario_fim %>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <form method="POST" action="/admin/turmas/<%= turma.id %>/alunos">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+            <div class="mb-4">
+              <h5>
+                <i class="bi bi-person-check"></i> Alunos Matriculados
+              </h5>
+              <p class="text-muted small">Marque os alunos que estão matriculados nesta turma</p>
+
+              <% if (alunos && alunos.length > 0) { %>
+                <div class="row">
+                  <% alunos.forEach(aluno => { %>
+                    <div class="col-md-6 mb-3">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="aluno_<%= aluno.id %>"
+                          name="alunos_ids"
+                          value="<%= aluno.id %>"
+                          <%= (alunosSelecionados && alunosSelecionados.includes(aluno.id)) ? 'checked' : '' %>
+                        >
+                        <label class="form-check-label" for="aluno_<%= aluno.id %>">
+                          <%= aluno.nome %>
+                        </label>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info" role="alert">
+                  <i class="bi bi-info-circle"></i> Nenhum aluno cadastrado ainda.
+                  <a href="/admin/alunos/novo" class="alert-link">Criar aluno</a>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Salvar
+              </button>
+              <a href="/admin/turmas/<%= turma.id %>/alunos" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

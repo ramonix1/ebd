@@ -19,18 +19,77 @@
     </div>
   <% } %>
 
+  <!-- Filtros -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <form method="GET" action="/admin/alunos" class="row g-3">
+        <div class="col-md-4">
+          <input type="text" name="busca" class="form-control" placeholder="Buscar por nome..." value="<%= typeof filtros !== 'undefined' && filtros.busca ? filtros.busca : '' %>">
+        </div>
+        <div class="col-md-3">
+          <select name="turma" class="form-select">
+            <option value="">Todas as turmas</option>
+            <% if (turmas && turmas.length > 0) { %>
+              <% turmas.forEach(turma => { %>
+                <option value="<%= turma.id %>" <%= typeof filtros !== 'undefined' && filtros.turma == turma.id ? 'selected' : '' %>>
+                  <%= turma.nome %>
+                </option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select name="status" class="form-select">
+            <option value="">Todos os status</option>
+            <option value="ativo" <%= typeof filtros !== 'undefined' && filtros.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
+            <option value="inativo" <%= typeof filtros !== 'undefined' && filtros.status === 'inativo' ? 'selected' : '' %>>Inativo</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+          <a href="/admin/alunos" class="btn btn-secondary w-100 mt-2">
+            <i class="bi bi-arrow-clockwise"></i> Limpar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="card border-0 shadow-sm">
     <% if (alunos && alunos.length > 0) { %>
       <div class="table-responsive">
         <table class="table mb-0">
           <thead class="bg-light">
             <tr>
-              <th>Nome</th>
+              <th style="cursor: pointer;">
+                <a href="/admin/alunos?<%= (typeof filtros !== 'undefined' ? 'busca=' + (filtros.busca || '') + '&turma=' + (filtros.turma || '') + '&status=' + (filtros.status || '') + '&' : '') %>ordem=<%= typeof filtros !== 'undefined' && filtros.ordem === 'nome_desc' ? 'nome' : 'nome_desc' %>" style="text-decoration: none; color: inherit;">
+                  Nome
+                  <% if (typeof filtros !== 'undefined' && filtros.ordem && filtros.ordem.startsWith('nome')) { %>
+                    <i class="bi <%= filtros.ordem === 'nome_desc' ? 'bi-sort-down' : 'bi-sort-up' %>"></i>
+                  <% } %>
+                </a>
+              </th>
               <th>Data Nascimento</th>
               <th>Responsável</th>
               <th>Telefone</th>
-              <th>Turmas</th>
-              <th>Status</th>
+              <th style="cursor: pointer;">
+                <a href="/admin/alunos?<%= (typeof filtros !== 'undefined' ? 'busca=' + (filtros.busca || '') + '&turma=' + (filtros.turma || '') + '&status=' + (filtros.status || '') + '&' : '') %>ordem=<%= typeof filtros !== 'undefined' && filtros.ordem === 'turma_desc' ? 'turma' : 'turma_desc' %>" style="text-decoration: none; color: inherit;">
+                  Turmas
+                  <% if (typeof filtros !== 'undefined' && filtros.ordem && filtros.ordem.startsWith('turma')) { %>
+                    <i class="bi <%= filtros.ordem === 'turma_desc' ? 'bi-sort-down' : 'bi-sort-up' %>"></i>
+                  <% } %>
+                </a>
+              </th>
+              <th style="cursor: pointer;">
+                <a href="/admin/alunos?<%= (typeof filtros !== 'undefined' ? 'busca=' + (filtros.busca || '') + '&turma=' + (filtros.turma || '') + '&status=' + (filtros.status || '') + '&' : '') %>ordem=<%= typeof filtros !== 'undefined' && filtros.ordem === 'status' ? 'nome' : 'status' %>" style="text-decoration: none; color: inherit;">
+                  Status
+                  <% if (typeof filtros !== 'undefined' && filtros.ordem === 'status') { %>
+                    <i class="bi bi-sort-down"></i>
+                  <% } %>
+                </a>
+              </th>
               <th style="width: 200px;">Ações</th>
             </tr>
           </thead>
@@ -83,6 +142,16 @@
                   <a href="/admin/alunos/<%= aluno.id %>/editar" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-pencil"></i> Editar
                   </a>
+                  <form method="POST" action="/admin/alunos/<%= aluno.id %>/toggle" style="display: inline;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <button type="submit" class="btn btn-sm <%= aluno.ativo ? 'btn-outline-danger' : 'btn-outline-success' %>">
+                      <% if (aluno.ativo) { %>
+                        <i class="bi bi-x-circle"></i> Desativar
+                      <% } else { %>
+                        <i class="bi bi-check-circle"></i> Ativar
+                      <% } %>
+                    </button>
+                  </form>
                   <form method="POST" action="/admin/alunos/<%= aluno.id %>/deletar" style="display: inline;" onsubmit="return confirm('Tem certeza?');">
                     <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
