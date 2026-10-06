@@ -30,7 +30,7 @@ EBD/
 │   ├── rateLimitMiddleware.js  # Rate limit no login (anti brute-force)
 │   ├── validators.js           # Regras de validação (express-validator)
 │   ├── asyncHandler.js         # Wrapper de erros + httpError
-│   └── uploadMiddleware.js     # Upload de foto de perfil (multer)
+│   └── uploadMiddleware.js     # Upload de foto de perfil (multer memoryStorage, 2MB, jpeg/png/webp)
 ├── views/                       # Templates EJS
 │   ├── partials/               # Header/Footer reutilizáveis
 │   ├── login.ejs              # Página de login
@@ -116,7 +116,7 @@ npm start
 ```bash
 psql -U postgres -c "CREATE DATABASE icaseweb_ebd;"
 psql -U postgres -d icaseweb_ebd -f database/schema.sql
-npm run seed       # cria o admin inicial
+npm run seed       # cria o admin inicial (ADMIN_EMAIL/ADMIN_SENHA/ADMIN_NOME opcionais)
 
 # Para um banco já existente (criado com schema antigo), aplique as migrations:
 npm run migrate    # idempotente; registra o que já foi aplicado em schema_migrations
@@ -127,6 +127,14 @@ npm run migrate    # idempotente; registra o que já foi aplicado em schema_migr
 - Email: `admin@ebd.com`
 - Senha: `admin123`
 - **Mude após primeiro login**
+
+## Produção (Render + Supabase)
+
+- `render.yaml` (blueprint): `npm run migrate && npm start`, health check `GET /healthz`.
+- `npm run migrate` num banco vazio aplica `database/schema.sql` e depois as migrations; a tabela `session` é criada pelo connect-pg-simple ao subir o servidor.
+- Env: `DATABASE_URL`, `SESSION_SECRET` (obrigatório em produção), `PGSSL` (`require`/`disable`; SSL ligado por padrão em `NODE_ENV=production`), `PG_POOL_MAX` (default 20 local / 10 produção). Ver `.env.example`.
+- Fotos de perfil ficam no PostgreSQL (`usuarios.foto_dados`/`foto_mime`, migration 004) e são servidas por `GET /perfil/foto`; `usuarios.foto_perfil` guarda essa URL. Disco do Render é efêmero: nada de `public/uploads`.
+- Não use `SELECT *` em `usuarios` (carregaria o binário da foto).
 
 ## Convenções
 

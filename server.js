@@ -16,6 +16,12 @@ if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
   process.exit(1);
 }
 
+// Render fica atrás de um proxy: necessário para cookie `secure` e IP real (rate limit).
+app.set('trust proxy', 1);
+
+// Health check do Render: público, antes de sessão/CSRF e sem tocar no banco.
+app.get('/healthz', (req, res) => res.status(200).send('ok'));
+
 // Middleware de segurança
 app.use(helmet({
   contentSecurityPolicy: {

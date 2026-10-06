@@ -177,9 +177,9 @@ const atualizarAlunosDaTurma = asyncHandler(async (req, res) => {
   }
   const turma = turmaResult.rows[0];
 
-  const ids = Array.isArray(alunos_ids)
-    ? alunos_ids.map((id) => parseInt(id, 10)).filter((id) => Number.isInteger(id))
-    : [];
+  // Com um único checkbox marcado o body-parser entrega string, não array.
+  const bruto = Array.isArray(alunos_ids) ? alunos_ids : alunos_ids ? [alunos_ids] : [];
+  const ids = bruto.map((id) => parseInt(id, 10)).filter((id) => Number.isInteger(id));
 
   const client = await pool.connect();
   try {

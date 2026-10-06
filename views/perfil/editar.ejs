@@ -37,6 +37,8 @@
             <i class="bi bi-shield-check"></i>
             <% if (usuario.tipo === 'admin') { %>
               Administrador
+            <% } else if (usuario.tipo === 'secretaria') { %>
+              Secretaria
             <% } else { %>
               Professor
             <% } %>
@@ -53,11 +55,11 @@
                 class="form-control"
                 id="foto_perfil"
                 name="foto_perfil"
-                accept="image/jpeg,image/png,image/gif"
+                accept="image/jpeg,image/png,image/webp"
                 onchange="this.form.submit()"
               >
               <small class="text-muted d-block mt-2">
-                Máximo 5MB. Formatos: JPEG, PNG, GIF
+                Máximo 2MB. Formatos: JPEG, PNG, WEBP
               </small>
             </div>
           </form>
@@ -129,7 +131,7 @@
               <input
                 type="text"
                 class="form-control form-control-lg"
-                value="<%= usuario.tipo === 'admin' ? 'Administrador' : 'Professor' %>"
+                value="<%= ({ admin: 'Administrador', secretaria: 'Secretaria' })[usuario.tipo] || 'Professor' %>"
                 disabled
               >
             </div>

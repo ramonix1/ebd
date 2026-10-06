@@ -45,6 +45,8 @@
                 <td>
                   <% if (usuario.tipo === 'admin') { %>
                     <span class="badge bg-danger">Administrador</span>
+                  <% } else if (usuario.tipo === 'secretaria') { %>
+                    <span class="badge bg-warning text-dark">Secretaria</span>
                   <% } else { %>
                     <span class="badge bg-info">Professor</span>
                   <% } %>

@@ -6,7 +6,7 @@ const login = asyncHandler(async (req, res) => {
   const { email, senha } = req.body;
 
   const result = await pool.query(
-    'SELECT * FROM usuarios WHERE email = $1 AND ativo = true',
+    'SELECT id, email, senha, nome, tipo FROM usuarios WHERE email = $1 AND ativo = true',
     [email]
   );
 
@@ -31,7 +31,7 @@ const login = asyncHandler(async (req, res) => {
     tipo: usuario.tipo,
   };
 
-  const redirectUrl = usuario.tipo === 'admin' ? '/admin/dashboard' : '/professor/dashboard';
+  const redirectUrl = ['admin', 'secretaria'].includes(usuario.tipo) ? '/admin/dashboard' : '/professor/dashboard';
   res.redirect(redirectUrl);
 });
 

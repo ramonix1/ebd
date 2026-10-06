@@ -1,12 +1,14 @@
--- Usuarios (admin e professores)
+-- Usuarios (admin, professores e secretaria)
 CREATE TABLE usuarios (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   senha VARCHAR(255) NOT NULL,
   nome VARCHAR(255) NOT NULL,
-  tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('admin', 'professor')),
+  tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('admin', 'professor', 'secretaria')),
   telefone VARCHAR(20),
   foto_perfil VARCHAR(255),
+  foto_dados BYTEA,
+  foto_mime VARCHAR(50),
   ativo BOOLEAN DEFAULT true,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP

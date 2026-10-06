@@ -8,7 +8,16 @@ const pool = require('../config/db');
 // tabela de controle. Idempotente — rodar de novo não reaplica nada.
 const MIGRATIONS_DIR = path.join(__dirname, '../database/migrations');
 
+const SCHEMA_FILE = path.join(__dirname, '../database/schema.sql');
+
 async function migrate() {
+  // Banco novo e vazio: cria o schema base antes das migrations.
+  const existe = await pool.query("SELECT to_regclass('public.usuarios') AS t");
+  if (!existe.rows[0].t) {
+    await pool.query(fs.readFileSync(SCHEMA_FILE, 'utf8'));
+    console.log('✅ schema.sql aplicado (banco novo).');
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
       nome VARCHAR(255) PRIMARY KEY,

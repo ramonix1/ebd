@@ -6,9 +6,9 @@ async function seedAdmin() {
   try {
     console.log('Iniciando seed de usuário admin...');
 
-    const email = 'admin@ebd.com';
-    const senha = 'admin123';
-    const nome = 'Administrador';
+    const email = process.env.ADMIN_EMAIL || 'admin@ebd.com';
+    const senha = process.env.ADMIN_SENHA || 'admin123';
+    const nome = process.env.ADMIN_NOME || 'Administrador';
 
     // Verificar se admin já existe
     const result = await pool.query(
@@ -17,7 +17,8 @@ async function seedAdmin() {
     );
 
     if (result.rows.length > 0) {
-      console.log('⚠️  Usuário admin já existe: admin@ebd.com');
+      console.log(`⚠️  Usuário admin já existe: ${email}`);
+      await pool.end();
       return;
     }
 
@@ -38,8 +39,8 @@ async function seedAdmin() {
     console.log('✅ Usuário admin criado com sucesso!');
     console.log('');
     console.log('Credenciais:');
-    console.log('  Email: admin@ebd.com');
-    console.log('  Senha: admin123');
+    console.log(`  Email: ${email}`);
+    console.log(`  Senha: ${process.env.ADMIN_SENHA ? '(definida em ADMIN_SENHA)' : senha}`);
     console.log('');
     console.log('⚠️  IMPORTANTE: Altere a senha após o primeiro login!');
 

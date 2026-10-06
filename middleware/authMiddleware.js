@@ -1,6 +1,8 @@
 const pool = require('../config/db');
 const { httpError } = require('./asyncHandler');
 
+const TIPOS_GESTAO = ['admin', 'secretaria'];
+
 const requireAuth = (req, res, next) => {
   if (!req.session.usuario) {
     return res.redirect('/login');
@@ -15,18 +17,26 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
+// Gestão: admin ou secretaria (tudo do admin, exceto gerenciar usuários).
+const requireGestao = (req, res, next) => {
+  if (!TIPOS_GESTAO.includes(req.session.usuario.tipo)) {
+    return next(httpError(403, 'Você não tem permissão para acessar esta página.'));
+  }
+  next();
+};
+
 const requireProfessor = (req, res, next) => {
-  if (req.session.usuario.tipo !== 'professor' && req.session.usuario.tipo !== 'admin') {
+  if (req.session.usuario.tipo !== 'professor' && !TIPOS_GESTAO.includes(req.session.usuario.tipo)) {
     return next(httpError(403, 'Você não tem permissão para acessar esta página.'));
   }
   next();
 };
 
 // Garante que o professor só acesse turmas às quais está vinculado.
-// Admin tem acesso a todas. Espera :turmaId (ou :id) na rota.
+// Admin e secretaria têm acesso a todas. Espera :turmaId (ou :id) na rota.
 const requireTurmaAccess = async (req, res, next) => {
   try {
-    if (req.session.usuario.tipo === 'admin') return next();
+    if (TIPOS_GESTAO.includes(req.session.usuario.tipo)) return next();
 
     const turmaId = req.params.turmaId || req.params.id;
     const result = await pool.query(
@@ -46,6 +56,7 @@ const requireTurmaAccess = async (req, res, next) => {
 module.exports = {
   requireAuth,
   requireAdmin,
+  requireGestao,
   requireProfessor,
   requireTurmaAccess,
 };

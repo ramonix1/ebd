@@ -11,14 +11,15 @@ const validar = (req, res, next) => {
 const TRIMESTRES = ['1', '2', '3', '4'];
 
 const loginRules = [
-  body('email').trim().isEmail().withMessage('Informe um e-mail válido'),
+  // require_tld: false — há usuários cadastrados com e-mail sem TLD (ex.: nome@teste).
+  body('email').trim().isEmail({ require_tld: false }).withMessage('Informe um e-mail válido'),
   body('senha').notEmpty().withMessage('Senha é obrigatória'),
 ];
 
 const usuarioCreateRules = [
   body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
   body('email').trim().isEmail().withMessage('Informe um e-mail válido'),
-  body('tipo').isIn(['admin', 'professor']).withMessage('Tipo inválido'),
+  body('tipo').isIn(['admin', 'professor', 'secretaria']).withMessage('Tipo inválido'),
   body('senha').isLength({ min: 6 }).withMessage('A senha deve ter ao menos 6 caracteres'),
   body('senha_confirmacao')
     .optional({ checkFalsy: true })
@@ -28,7 +29,7 @@ const usuarioCreateRules = [
 
 const usuarioUpdateRules = [
   body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
-  body('tipo').isIn(['admin', 'professor']).withMessage('Tipo inválido'),
+  body('tipo').isIn(['admin', 'professor', 'secretaria']).withMessage('Tipo inválido'),
   body('senha').optional({ checkFalsy: true }).isLength({ min: 6 }).withMessage('A senha deve ter ao menos 6 caracteres'),
 ];
 

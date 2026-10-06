@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
+const { requireAuth, requireAdmin, requireGestao } = require('../middleware/authMiddleware');
 const {
   validar,
   usuarioCreateRules,
@@ -18,9 +18,10 @@ const dashboardController = require('../controllers/dashboardController');
 const matriculaController = require('../controllers/matriculaController');
 const minhasTurmasController = require('../controllers/professorMinhasTurmasController');
 
-// Todos os routes admin requerem autenticação e permissão admin
+// Todos os routes admin requerem autenticação e perfil de gestão (admin ou secretaria).
+// Rotas de usuários exigem requireAdmin adicionalmente (ver seção USUÁRIOS).
 router.use(requireAuth);
-router.use(requireAdmin);
+router.use(requireGestao);
 
 // Dashboard admin
 router.get('/dashboard', dashboardController.adminDashboard);
@@ -55,13 +56,13 @@ router.get('/alunos', alunoController.listar);
 router.post('/alunos', alunoRules, validar, alunoController.criar);
 
 // ==================== USUÁRIOS ====================
-// Rotas específicas ANTES de dinâmicas
-router.get('/usuarios/novo', usuarioController.formularioNovo);
-router.get('/usuarios/:id/editar', usuarioController.editar);
-router.post('/usuarios/:id/deletar', usuarioController.deletar);
-router.post('/usuarios/:id', usuarioUpdateRules, validar, usuarioController.atualizar);
-router.get('/usuarios', usuarioController.listar);
-router.post('/usuarios', usuarioCreateRules, validar, usuarioController.criar);
+// Exclusivo do admin (requireAdmin em cada rota). Rotas específicas ANTES de dinâmicas
+router.get('/usuarios/novo', requireAdmin, usuarioController.formularioNovo);
+router.get('/usuarios/:id/editar', requireAdmin, usuarioController.editar);
+router.post('/usuarios/:id/deletar', requireAdmin, usuarioController.deletar);
+router.post('/usuarios/:id', requireAdmin, usuarioUpdateRules, validar, usuarioController.atualizar);
+router.get('/usuarios', requireAdmin, usuarioController.listar);
+router.post('/usuarios', requireAdmin, usuarioCreateRules, validar, usuarioController.criar);
 
 // ==================== PROFESSORES ====================
 // Rotas específicas ANTES de dinâmicas

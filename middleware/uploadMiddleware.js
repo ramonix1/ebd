@@ -1,34 +1,43 @@
 const multer = require('multer');
-const path = require('path');
 
-// Configuração de armazenamento
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/uploads/perfis/'));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'perfil-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+const MAX_FOTO_BYTES = 2 * 1024 * 1024; // 2MB
+const MIMES_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
+
+// A foto fica em memória (req.file.buffer) e é gravada no PostgreSQL pelo
+// controller: o disco do Render é efêmero.
+const storage = multer.memoryStorage();
 
 // Validação de arquivo
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-
-  if (allowedMimes.includes(file.mimetype) && allowedExtensions.includes(path.extname(file.originalname).toLowerCase())) {
+  if (MIMES_PERMITIDOS.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Apenas imagens (JPEG, PNG, GIF) são permitidas'), false);
+    const erro = new Error('Apenas imagens (JPEG, PNG, WEBP) são permitidas');
+    erro.status = 400;
+    cb(erro, false);
   }
 };
 
-// Multer upload
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: MAX_FOTO_BYTES, files: 1 },
 });
 
-module.exports = upload;
+// Converte erros do multer (ex.: arquivo grande demais) em erros 4xx amigáveis.
+function traduzirErro(erro) {
+  if (erro && erro.name === 'MulterError') {
+    erro.status = 400;
+    if (erro.code === 'LIMIT_FILE_SIZE') {
+      erro.message = 'A imagem deve ter no máximo 2MB';
+    }
+  }
+  return erro;
+}
+
+module.exports = {
+  single: (campo) => (req, res, next) =>
+    upload.single(campo)(req, res, (erro) => next(erro ? traduzirErro(erro) : undefined)),
+  MAX_FOTO_BYTES,
+  MIMES_PERMITIDOS,
+};

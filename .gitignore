@@ -10,3 +10,4 @@ dist/
 .jest/
 coverage/
 *.log
+public/uploads/

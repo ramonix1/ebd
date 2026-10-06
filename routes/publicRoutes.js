@@ -11,7 +11,7 @@ const upload = require('../middleware/uploadMiddleware');
 // Login
 router.get('/login', (req, res) => {
   if (req.session.usuario) {
-    const redirectUrl = req.session.usuario.tipo === 'admin' ? '/admin/dashboard' : '/professor/dashboard';
+    const redirectUrl = ['admin', 'secretaria'].includes(req.session.usuario.tipo) ? '/admin/dashboard' : '/professor/dashboard';
     return res.redirect(redirectUrl);
   }
   res.render('login', { titulo: 'Login' });
@@ -25,7 +25,7 @@ router.get('/logout', authController.logout);
 // Home - redireciona para dashboard ou login
 router.get('/', (req, res) => {
   if (req.session.usuario) {
-    const redirectUrl = req.session.usuario.tipo === 'admin' ? '/admin/dashboard' : '/professor/dashboard';
+    const redirectUrl = ['admin', 'secretaria'].includes(req.session.usuario.tipo) ? '/admin/dashboard' : '/professor/dashboard';
     return res.redirect(redirectUrl);
   }
   res.redirect('/login');
@@ -44,6 +44,7 @@ router.post(
   validar,
   perfilController.atualizar
 );
+router.get('/perfil/foto', requireAuth, perfilController.foto);
 router.post('/perfil/deletar-foto', requireAuth, perfilController.deletarFoto);
 
 module.exports = router;

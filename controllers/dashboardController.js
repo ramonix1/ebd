@@ -69,7 +69,7 @@ const adminDashboard = asyncHandler(async (req, res) => {
 
 const professorDashboard = asyncHandler(async (req, res) => {
   const usuarioId = req.session.usuario.id;
-  const isAdmin = req.session.usuario.tipo === 'admin';
+  const isAdmin = ['admin', 'secretaria'].includes(req.session.usuario.tipo); // gestão vê todas as turmas
 
   let turmasResult, alunosResult, frequenciaResult, ultimaChamadaResult;
 

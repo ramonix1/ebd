@@ -34,6 +34,13 @@ describe('regras de validação', () => {
     expect(res.isEmpty()).toBe(false);
   });
 
+  test('usuário: tipo secretaria é aceito', async () => {
+    const res = await rodar(usuarioCreateRules, {
+      nome: 'Maria', email: 'a@b.com', tipo: 'secretaria', senha: '123456',
+    });
+    expect(res.isEmpty()).toBe(true);
+  });
+
   test('turma: trimestre inválido falha', async () => {
     const res = await rodar(turmaRules, {
       nome: 'Turma', dia_semana: 'domingo', horario_inicio: '09:00', horario_fim: '10:00', trimestre: '9',
